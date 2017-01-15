@@ -1,0 +1,44 @@
+? why do we care about bitfields?
+reading/writing from memory is slowest thing CPU does
+
+some cpus provide cache misses for free - just incrementing registers. would be expesnive if you ahve to emulate that
+
+network mask = bitmask!
+255.255.255.0 = 255 hosts = good amount of comps for a local network
+network bits vs host bits
+
+ASCII vs UTF-8
+unicode - 2 byte encoding
+
+wait how many bytes is UTF-8? variable? is there a max? 1111 1110, right? would say look at the next 7 bytes, so the whole thing is 8 bytes?
+How many codepoints are in unicode? in the millions...
+rob pike said UTF-8 could theoretically go forever.
+
+Unicode is just a table...
+UTF-8 is how to encode those points in bytes. it has a nice benefit that it's easily distinguishable from ASCII.
+Con: can't constant time find 50th char in string... because each char is variable length. You have to read/parse them out.
+Language could get this back by making the byte array a constant width, then you could use pointer math.
+
+use strip comments program to find streaming I/O.
+
+
+the _t types are all exact width. the regular int, by convention, is just the width of yoru cpu register - depends on your machine.
+
+the actual C that loads executables:
+cat /usr/include/mach-o/loader.h
+
+check out that struct that parses out the 8-byte bitfield header for each file!
+
+C structs are just shape of bits!
+types, too, are just so that you know how wide a thing is. also for compiler to freak out.
+
+this guy sets up virtual memory, loads the assembly instructions into the text segment, and puts the CPU pointer at the first char of the text segment. a LOADER! kernel responsibility. makes the process.
+
+
+object tool: index
+otool -t a.out
+
+bytes that constitute x86 instructions
+
+otool -tv a.out
+translates using 1:1 mapping between each byte and its assembly mnemonic... fucking awesome
