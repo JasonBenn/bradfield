@@ -1,0 +1,39 @@
+BIOS is on flash storage in memory - equivalent sized blank one you can write to, then you flip a bit to switch to reading from that one
+BIOS is a "stored" program
+
+Read about __PAGEZERO. wtf, aren't we convincing the program that it only has half as much virtual memory?
+
+stack | text | data | k | IO | heap
+
+Bus error - trying to write to data
+string constants
+? "how many globals you have"
+
+system call = "long" jump from local code into kernel's memory space
+? kernel code is mapped into every program! why the duplication? there's a good answer. find out.
+
+only kernel can read/write to IO (mostly. sometimes root privileges can access IO directly, avoiding a context switch is more performant)
+
+MMU - memory mapping unit makes virtual machines, which double the virtual translations needs, performant.
+
+heap grows down. malloc and free work w heap.
+stack grows up! so to push to the stack, you subtract from the SP. to pop things from the stack, add.
+
+reserved pointers:
+SP: stack pointer (stack section)
+IP: instruction pointer (text section)
+GP: global pointer (data section)
+HP: heap pointer (heap section)
+
+? loader called these things sections, right? what's the diff between sections and segments?
+
+------ MIPS
+
+RISC: reduced instruction set pointer
+ABI: application binary interface
+
+cross-assembler
+C: universal assembler
+
+MIPS instructions: 32 bits:
+op code/bit pattern representing instruction: 32
