@@ -1,0 +1,45 @@
+assembler compilation step:
+1. strip whitespace
+2. omit comments
+3. go line by line...
+  3a. group directives (.text, .data) together
+  3b. map addresses to labels
+^ "internal linking"
+
+global variables are shared between assembled programs
+
+linking step happens any time there are two objects
+
+static linking: labels replaced w absolute addresses
+dynamic linking: jump to linking code in text segment, linker sends you along to label
+
+linking requires a DAG and walking them in dependent order - has to be sequential.
+
+also: shared libraries are dynamically linked
+
+
+
+cc: 5 steps
+1. PREPROCESSING: cc -E 0-program.c -o 1-preprocessed.c
+  finds & runs preprocessor directives
+  btw, after this step, # means something else - they're sourcemap directives for a debugger, essentially. if sthing goes wrong, we'll know where the C code came from.
+2. BUILD AST: clang -cc1 -w -ast-dump 0-program.c > 2-ast.txt
+  lex file, parse file, syntax check, exit
+3. CODE GENERATION: cc -S -w 0-program.c -o 3-assembly.s
+  outputs assembly!
+4. ASSEMBLE: as 3-assembly.s -o 4-assembled.o
+  create object file
+  check it out:
+    file a.out
+    > Mach-O 64-bit object x86_64
+5. LINK: cc 4-assembled.o -o 5-executable.out
+  now it's executable, baby.
+    file a.out
+    > Mach-O 64-bit executable x86_64
+  read the load commands with: otool -l out
+
+cc has a gcc compatible argument interface
+clang is a superset of cc - it has some clang-only commands.
+
+a symbol table is a convenient layer of abstraction that saves lots of compilation time
+without a symbol table, if you had 50 c files, you'd have

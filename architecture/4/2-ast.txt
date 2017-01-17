@@ -1,0 +1,40 @@
+TranslationUnitDecl 0x7fd86f01b8d0 <<invalid sloc>> <invalid sloc>
+|-TypedefDecl 0x7fd86f01bdc8 <<invalid sloc>> <invalid sloc> implicit __int128_t '__int128'
+| `-BuiltinType 0x7fd86f01bb20 '__int128'
+|-TypedefDecl 0x7fd86f01be28 <<invalid sloc>> <invalid sloc> implicit __uint128_t 'unsigned __int128'
+| `-BuiltinType 0x7fd86f01bb40 'unsigned __int128'
+|-TypedefDecl 0x7fd86f01c0e8 <<invalid sloc>> <invalid sloc> implicit __NSConstantString 'struct __NSConstantString_tag'
+| `-RecordType 0x7fd86f01bf00 'struct __NSConstantString_tag'
+|   `-Record 0x7fd86f01be78 '__NSConstantString_tag'
+|-TypedefDecl 0x7fd86f01c178 <<invalid sloc>> <invalid sloc> implicit __builtin_ms_va_list 'char *'
+| `-PointerType 0x7fd86f01c140 'char *'
+|   `-BuiltinType 0x7fd86f01b960 'char'
+|-TypedefDecl 0x7fd86f01c428 <<invalid sloc>> <invalid sloc> implicit __builtin_va_list 'struct __va_list_tag [1]'
+| `-ConstantArrayType 0x7fd86f01c3d0 'struct __va_list_tag [1]' 1 
+|   `-RecordType 0x7fd86f01c250 'struct __va_list_tag'
+|     `-Record 0x7fd86f01c1c8 '__va_list_tag'
+|-FunctionDecl 0x7fd86f01c550 <./0-program-2.c:1:1, line:3:1> line:1:5 used sub2 'int (int)'
+| |-ParmVarDecl 0x7fd86f01c488 <col:10, col:14> col:14 used i 'int'
+| `-CompoundStmt 0x7fd86f0622e0 <col:17, line:3:1>
+|   `-ReturnStmt 0x7fd86f0622c8 <line:2:3, col:13>
+|     `-BinaryOperator 0x7fd86f0622a0 <col:10, col:13> 'int' '-'
+|       |-ImplicitCastExpr 0x7fd86f062288 <col:10> 'int' <LValueToRValue>
+|       | `-DeclRefExpr 0x7fd86f062240 <col:10> 'int' lvalue ParmVar 0x7fd86f01c488 'i' 'int'
+|       `-IntegerLiteral 0x7fd86f062268 <col:13> 'int' 2
+|-FunctionDecl 0x7fd86f062530 <0-program.c:3:1, line:5:1> line:3:5 main 'int (int, char **)'
+| |-ParmVarDecl 0x7fd86f062310 <col:10, col:14> col:14 argc 'int'
+| |-ParmVarDecl 0x7fd86f062420 <col:20, col:31> col:26 used argv 'char **':'char **'
+| `-CompoundStmt 0x7fd86f0628c8 <col:34, line:5:1>
+|   `-ReturnStmt 0x7fd86f0628b0 <line:4:3, col:28>
+|     `-CallExpr 0x7fd86f062880 <col:10, col:28> 'int'
+|       |-ImplicitCastExpr 0x7fd86f062868 <col:10> 'int (*)(int)' <FunctionToPointerDecay>
+|       | `-DeclRefExpr 0x7fd86f0625e8 <col:10> 'int (int)' Function 0x7fd86f01c550 'sub2' 'int (int)'
+|       `-CallExpr 0x7fd86f0627f0 <col:15, col:27> 'int'
+|         |-ImplicitCastExpr 0x7fd86f0627d8 <col:15> 'int (*)()' <FunctionToPointerDecay>
+|         | `-DeclRefExpr 0x7fd86f062700 <col:15> 'int ()' Function 0x7fd86f062658 'atoi' 'int ()'
+|         `-ImplicitCastExpr 0x7fd86f062820 <col:20, col:26> 'char *' <LValueToRValue>
+|           `-ArraySubscriptExpr 0x7fd86f062788 <col:20, col:26> 'char *' lvalue
+|             |-ImplicitCastExpr 0x7fd86f062770 <col:20> 'char **':'char **' <LValueToRValue>
+|             | `-DeclRefExpr 0x7fd86f062728 <col:20> 'char **':'char **' lvalue ParmVar 0x7fd86f062420 'argv' 'char **':'char **'
+|             `-IntegerLiteral 0x7fd86f062750 <col:25> 'int' 1
+`-FunctionDecl 0x7fd86f062658 <<invalid sloc>> col:15 implicit used atoi 'int ()'
