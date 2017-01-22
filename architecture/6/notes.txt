@@ -1,0 +1,12 @@
+instruction: 1 byte
+argument: 2 bytes, always references constant (decode as big endian int)
+
+load instruction, find arg, put on stack
+
+branching, conditionals
+
+only primitives go on stack
+
+fetch/decode/execute
+
+code only includes 1 opcode, 2 byte arg code
