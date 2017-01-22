@@ -1,7 +1,10 @@
 const INST = {
   halt: 0x00,
   loadConst: 0x01,
-  print: 0x02
+  print: 0x02,
+  add: 0x03,
+  b: 0x04,
+  c: 0x05
 }
 
 function eval(w) {
@@ -17,17 +20,42 @@ function eval(w) {
       case (INST['loadConst']):
         var byte1 = w.code[w.ip++];
         var byte2 = w.code[w.ip++];
-        w.stack.push(w.consts[(byte1 << 8) | byte2])
+        const idx = (byte1 << 8) | byte2;
+        w.stack.push(w.consts[idx])
         break;
       case (INST['print']):
         console.log(w.stack.pop());
         break;
+      case (INST['add']):
+        w.stack.push(w.stack.pop() + w.stack.pop());
+        break;
+      case (INST['b']):
+        console.log('b');
+        break;
+      case (INST['c']):
+        console.log('c');
+        break;
+      default:
+        throw "unrecognized instruction";
     }
     w.ins = w.code[w.ip];
   }
 }
 
 eval({
-  "code": [1, 0, 0, 2],
-  "consts": ["hello world"]
+  "code": [
+    1, 0, 0, // LOAD_CONST 0  // 3
+    1, 0, 1, // LOAD_CONST 1  // 5
+    3,       // ADD
+    2,       // PRINT
+  ],
+  "consts": [3, 5]
 })
+
+// eval({
+//   "code": [
+//     1, 0, 0, // LOAD_CONST 0   // ("HELLO WORLD")
+//     2,       // PRINT
+//   ],
+//   "consts": ["hello world"]
+// })
