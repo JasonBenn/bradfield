@@ -3,8 +3,7 @@ const INST = {
   loadConst: 0x01,
   print: 0x02,
   add: 0x03,
-  b: 0x04,
-  c: 0x05
+  eq: 0x04
 }
 
 function eval(w) {
@@ -29,6 +28,9 @@ function eval(w) {
       case (INST['add']):
         w.stack.push(w.stack.pop() + w.stack.pop());
         break;
+      case (INST['eq']):
+        w.stack.push(w.stack.pop() === w.stack.pop());
+        break;
       case (INST['b']):
         console.log('b');
         break;
@@ -42,14 +44,28 @@ function eval(w) {
   }
 }
 
+// eval({
+//   "code": [
+//     1, 0, 0, // LOAD_CONST 0  // 3
+//     1, 0, 1, // LOAD_CONST 1  // 5
+//     3,       // ADD
+//     2,       // PRINT
+//   ],
+//   "consts": [3, 5]
+// })
+
 eval({
   "code": [
     1, 0, 0, // LOAD_CONST 0  // 3
     1, 0, 1, // LOAD_CONST 1  // 5
-    3,       // ADD
-    2,       // PRINT
+    4,       // EQ
+    2,       // PRINT // FALSE
+    1, 0, 2, // LOAD_CONST 2  // 9
+    1, 0, 3, // LOAD_CONST 3  // 9
+    4,       // EQ
+    2,       // PRINT // TRUE
   ],
-  "consts": [3, 5]
+  "consts": [3, 5, 9, 9]
 })
 
 // eval({
