@@ -1,0 +1,37 @@
+you will think about parallelism, branch prediction, pipelining... but hte prereq is circuits.
+
+CLOCKING
+hz = transitions per second
+flip flop circuit = takes snapshots with every clock cycle
+all memory is flip flops (including registers)
+in a cpu only flip flops give input (also input devices)
+
+CPU may clock way faster... that's what we mean by a "clock"
+2.6ghz CPU, 1.5ghz frontside bus, with units that are faster/slower
+
+CONTROL UNIT
+1. FETCH
+  finishes once you've got instruction in a register
+  (for a MIPs chip) add 4 to program counter
+  (fast because L1 cache reads are FAST!)
+
+2. DECODE
+  read opcode
+  if registers are used, they're fetched and stored in internal buffer
+  ALU is only hooked up to 3 internal registers.
+
+3. ALU
+  do logic work on buffers
+  result registers settles into a state
+  mutate 1 register
+
+4. MEMORY ACCESS
+  store or load to registers?
+  send register to bus?
+
+5. WRITE REGISTER
+  if ALU updated result register... write it to a real register
+
+DATAPATH
+the flow of data through the above?
+man, I'm not gonna get this til I do nand2tetris.
