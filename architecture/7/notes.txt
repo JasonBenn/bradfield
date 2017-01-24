@@ -1,0 +1,25 @@
+FC: three hazards! Grab drawings from the youtube video, too.
+
+Major clock speed of CPU set by slowest stage (ALU)
+
+? Data hazard: instruction fetch gets wrong value/another inst is writing to memory. solution: two different physical spaces for memory.
+Control hazard: branch predictor goes the wrong way. solution: neural net on the chip!! holy shit, 98% correct predictions.
+Structural hazard: inst decode/register read reads from partially updated register bc another instruction is in write back stage. solution: read on clock cycle up, write on clock cycle down. whoa, electrical engineering wizardry.
+
+Data hazards: "data-flow backwards in time". software guys have to solve this one, as hardware guys pretty much solved the other two. Compilers spend a lot of time on this in the optimization phase. Identifying indendepent instructions so they're close together, dependent ones should be close together.
+
+Shunting! Circuit to put values in an intermediate register right back to register read stage (2) instead of later inst reading from the register file. Impressive.
+
+Branches are like 20% of all instructions executed
+
+options 1:
+MIPS:
+BEQ/BNE use mini-ALU, becuase equality is super easy and fast, so we can fit it in instruction decode/register read stage (2). neat! cuts branching penalty from 2 bubbels (waiting until after stage 3) to 1 bubble (wait until after stage 2).
+
+option 2: prediction.
+
+structural - always fixable with more hardware
+data - use interlocks or bypassing to resolve
+control - reduce impact w branch prediction or branch delay slots
+
+runtime - implicitly included in most languages - like garbage collecting/

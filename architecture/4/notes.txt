@@ -1,3 +1,9 @@
+dynamic linking vs static linking
+? all 5 steps in C compilation?
+
+
+
+
 assembler compilation step:
 1. strip whitespace
 2. omit comments
