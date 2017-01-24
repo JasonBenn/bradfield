@@ -52,6 +52,7 @@ bool is_pangram(const char *sentence) {
 
 // valgrind: find when you malloc'd but forgot free
 // subtool callgrind: tells you about asm jumps, can give you data on branch prediction performance
+// cache grind: stats on various caches of cpu
 
 int main(int argc, char const *argv[]) {
   const char sentence[] = "the quick brown fox jumps over the lazy dog";
