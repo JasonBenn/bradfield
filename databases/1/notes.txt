@@ -53,7 +53,73 @@ SQL frontends are popular - even if the primitives are like map and reduce.
 
 postgres came first - didn't have SQL frontend. postgresql is like everything after.
 
+---
 
+RAM is byte addressable
+Pages are somewhat larger, so they can remember
+external fragmentation - not enough spaces to fit pages. 4kB pages is standard.
+
+?FC: sysctl
+
+---
+
+process: abstraction for isolating memory
+thread: abstraction for isolating compute
+
+---
+
+Multix - first system to accomodate multiple users, bc they were all dickbags at MIT messing w each others memory
+unix - inspired by multix
+
+---
+
+if processes don't share memory, how do they communicate? need explicit way
+memory mapping, unix pipes, tcp/ip.
+
+use mmap to get shared memory. could use to implement pipes. but now you need to sync processes yourself using mutual exclusions.
+
+---
+
+?FC: parallelism vs concurrency
+
+parallelism: actual simultaneous, using multiple cores
+concurrency: illusion of same time (i.e., common implemtations use event loop). running in interleaved manner.
+
+(pipes run in parallel, cool)
+
+---
+
+?FC: 2^10 = k, 2^20 = M, 2^30 = T etc
+powers of 10
+
+grep -r 'SOVIET TROOPS IN ORANIENBURG' cia-crest-files-cia-crest-archive-metadata/. | awk 'BEGIN { OFS="," } { print $3 }'
+
+
+
+
+table: row-oriented.
+if you use hash map: "make it a separate structure that references in"
+loader code that loads into memory, parses it, allows search over memory
+
+write read file code in C:
+compare in memory performance to disk performance.
+
+
+if we have time, work towards index.
+
+
+every byte: drop the last 6: those are your cache lines.
+drop the next 4: those are your pages.
+
+
+just truncate to find addresses.
+
+---
+
+text vs varchar vs char
+char(100): gives you 100 chars back, incl spaces and null chars
+varchar(100): gives you strings, null terminated
+text: pointer to elsewhere.
 
 
 
