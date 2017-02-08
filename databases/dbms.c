@@ -7,6 +7,7 @@
 #define MAX_INPUT 100
 
 char table[MAX_RECORDS][MAX_RECORD_SIZE];
+int numRows = 0;
 
 void loadFile(char *path) {
   printf("loading path: %s\n", path);
@@ -16,7 +17,6 @@ void loadFile(char *path) {
   size_t len = 0;
   ssize_t read;
 
-  int numRows = 0;
   int bytesLoaded = 0;
   int i = 0;
   while ((read = getline(&line, &len, stream)) != -1) {
@@ -25,6 +25,12 @@ void loadFile(char *path) {
     numRows++;
   }
   printf("loaded %i bytes into %i rows\n", bytesLoaded, numRows);
+}
+
+void chomp(char *str) {
+  int end = strlen(str) - 1;
+  if (str[end] == '\n' || str[end] == '\r')
+    str[end] = '\0';
 }
 
 int main(int argc, char *argv[]) {
@@ -41,15 +47,17 @@ int main(int argc, char *argv[]) {
 
   // PARSE query
   char *column = strtok(input, ":");
-  char *searchTerm = strtok(NULL, ":");
-
-  printf("column: %s, searchTerm: %s\n", column, searchTerm);
+  char *value = strtok(NULL, ":");
+  chomp(value);
 
   char *result;
-  for (int i = 0; i < MAX_RECORDS; i++) {
-    result = strstr(table[i], searchTerm);
+  int resultsCount = 0;
+  for (int i = 0; i < numRows; i++) {
+    result = strstr(table[i], value);
     if (result != NULL) {
       printf("%s\n", result);
+      resultsCount++;
     }
   }
+  printf("%i/%i results\n", resultsCount, numRows);
 }
