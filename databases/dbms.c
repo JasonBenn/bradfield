@@ -1,58 +1,55 @@
 #include <stdio.h>
 #include <stdlib.h>
-#define MAX_RECORD_SIZE 1200 // a "long" row appears to be ~1062 chars
+#include <string.h>
 
-char *loadFile(char *path) {
+#define MAX_RECORDS 64000
+#define MAX_RECORD_SIZE 1500
+#define MAX_INPUT 100
+
+char table[MAX_RECORDS][MAX_RECORD_SIZE];
+
+void loadFile(char *path) {
   printf("loading path: %s\n", path);
-  FILE *f = fopen(path, "rb");
-  char *table = malloc(1000000000); // TODO: 1 gig currently.
 
-  fseek(f, 0, SEEK_END);
-  long fsize = ftell(f);
-  fseek(f, 0, SEEK_SET);  //same as rewind(f);
+  FILE *stream = fopen(path, "rb");
+  char *line = NULL;
+  size_t len = 0;
+  ssize_t read;
 
-  fread(table, fsize, 1, f);
-  fclose(f);
-
-  table[fsize] = '0';
-
-  return table;
-  // DECLARE byte currently scanned
-  // WHILE file at byte is not EOF
-    // fseek MAX_RECORD_SIZE?
-    // rewind back to newline char?
-    // malloc length of record?
-    //
-
-  // malloc numRecords * MAX_RECORD_SIZE
-  // put each line into a row in an array
-  // return array
+  int numRows = 0;
+  int bytesLoaded = 0;
+  int i = 0;
+  while ((read = getline(&line, &len, stream)) != -1) {
+    bytesLoaded += (int) read;
+    strncpy(table[i++], line, MAX_RECORD_SIZE);
+    numRows++;
+  }
+  printf("loaded %i bytes into %i rows\n", bytesLoaded, numRows);
 }
 
-// IDENTIFY files from file glob passed in on argv1
 int main(int argc, char *argv[]) {
   if (argc != 2) {
     return 1;
   }
 
-  char *table = loadFile(argv[1]);
-  for (int i = 0; i < 10; i++) {
-    printf("%c", table[i]);
+  loadFile(argv[1]);
+
+  // GET query from stdin
+  char input[MAX_INPUT];
+  printf("query: ");
+  fgets(input, MAX_INPUT, stdin);
+
+  // PARSE query
+  char *column = strtok(input, ":");
+  char *searchTerm = strtok(NULL, ":");
+
+  printf("column: %s, searchTerm: %s\n", column, searchTerm);
+
+  char *result;
+  for (int i = 0; i < MAX_RECORDS; i++) {
+    result = strstr(table[i], searchTerm);
+    if (result != NULL) {
+      printf("%s\n", result);
+    }
   }
-  printf("\n");
 }
-
-// FIRST file
-  // IDENTIFY structure of record
-
-// EACH file
-  // LOAD into memory, laid out as rows # TODO: also lay out as columns?
-
-// WAIT for query on STDIN
-
-// WITH query
-  // EXTRACT $column, $value FROM "SELECT * WHERE $column = $value"
-
-// EACH row
-  // IF match
-    // PRINT match
