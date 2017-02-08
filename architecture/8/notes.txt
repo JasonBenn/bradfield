@@ -1,0 +1,32 @@
+Level: access time (size, tech, managed)
+Registers: 0.5-1.5ns (1kb, CMOS, compiler/programmer)
+L1: 3ns (32kb, SRAM, CPU)
+L2: 6ns (256kb, SRAM, CPU)
+L3: 12ns (8mb, SRAM, CPU)
+RAM: 60ns (16gb, DRAM, OS)
+
+Compilers will do struct packing so that values don't cross cache line boundaries (64 bytes). Having to fetch another cache line for the other half of a 4 byte int would be bad.
+
+Misses:
+Compulsory: not present. ask memory mgmt unit, it says none of the 3 caches have it, so it reads it in through all 3 caches.
+
+Cache: tag data includes address, age. every clock tick increments age, every read decrements cache.
+
+Direct mapping - modulo your address by 1000, then store it there in L1.
+Problem: you're always stomping instructions bc they can only live in 1 place each.
+Solution: modulo 100(?), then store in 4 possible locations. So L1 miss means you only have to search 4 places before you know. Nice!
+
+Miss bc you stomped on a cache line bc of this system: conflict miss.
+
+Eviction miss: least recently used-ish circuitry, not a real LRU system.
+
+CacheGrind (subtool of valgrind) will track misses for you.
+
+
+^ all that is for reading
+
+Writing: write through, write back.
+through: write to RAM
+back: mark location as dirty, store in l3, wait to write to ram until lines in l3 evicted.
+
+C: static = put in DATA segment. private to this thing (file or fn). but also in functions, this line is only run once?

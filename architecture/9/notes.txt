@@ -1,0 +1,27 @@
+weak scaling - sometimes called horizontal scaling
+- you have to increase the problem size to get perf benefits
+- improves throughput but not latency
+
+strong scaling - improves latency, not throughput
+- it's like pipelining is weak scaling, improving clock speed = strong scaling
+
+programmer delivers unfinished final image
+then kernels transform image and copy result to frame buffer, which is what computer renders to screen
+
+memory-mapped IO - some region of memory that host writes to, that GPU always copies over to its memory. for example kernels/shader instructions.
+
+bus: just means set of wires between memory
+
+GPU has no controls, it just continually running the programs and data that you send it. so CPU has to sneak it back out.
+
+CPU has a crappy internal GPU!
+Now GPUs have some crappy internal CPUs! GPUs want fetch-execute cycle.
+Hard part is making use of all the circuitry.
+
+
+
+
+
+
+
+

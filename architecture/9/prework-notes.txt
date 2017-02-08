@@ -1,0 +1,86 @@
+parallelism in general:
+
+amdahl's law: parallelizing part of your program is great and all, but you're gonna be bottlenecked by your nonparallel code :'(
+
+flynn taxonomy: single/multiple instructions, single/multiple data
+
+SIMD: single instruction, multiple data: GPUs, x86 mm (matrix multiply) i's
+MIMD: multiple instruction, multiple data: completely separate things - multicore/warehouse-scale computers
+(SISD: non-paralel computers)
+(MISD: stupid, ignore)
+
+
+prework lecture 1: data parallelism (SIMD)
+
+intel SSE (streaming simd extensions): instructions for simd, use 128 bit registers packed w values
+
+c has "intrinsics" that map 1:1 to assembly code, cool.
+
+
+prework lecture 2: thread parallelism (MIMD)
+
+moore's law is prob done. parallelism only way to get faster apps.
+SIMD: extensions double in width every 3-4 yrs
+MIMD: add 2 cores every 2 years...
+We're sorta in a moore's law for parallelism
+
+threads: all have PC + cpu registers, access shared memory
+hardware threads virtualized by OS into many software threads
+
+hardware threads: two sets of pcs, two sets of registers (really not that expensive!). when one stalls, waiting for cache-missed memory fetch, for example, just switch to the other (hyperthread?)
+
+multi cores share outer caches - l2, l3
+sysctl: set/get kernel settings! whoa.
+physical cpu: actual cpus.
+logicalcpus: hardware threads.
+
+pragma: c's way of extending language. looks like comment, ignored if compiler doesn't understand. annotations. openMP: #pragma omp parallel
+
+lock implementation in mips: like 4 instructions. requires hardware to enforce atomic read/write.
+load linked: reserves an address. subsequent sc will only succeed if nobody else has touched this.
+store conditional: returns success/fail value to a return register.
+lock in mips w above: if sc fails, loop and try again until you get the lock.
+
+test and set.
+
+
+CUDA:
+
+host: cpu+memory
+device: gpu+memory
+kernels: functions executed on device
+
+idea:
+declare/allocate host+device memory
+host inits data, transfers to device, executes kernels, reads data back
+
+GPU has minor control logic to iterate through list, but isn't doing every pixel at once. more like sliding window 128 pixels wide.
+SIMD on CPU is like 4 at a time.
+
+GPU guys have wide values, but ML guys would prefer smaller values - can afford less precision (8 bits?). 8 is too small for a floating point values so GPUs resistant.
+
+GPU sometimes compile in hardware... send them the pseudo C, they send back a binary, ship it back to GPU memory. wow.
+
+best way to play around: EC2 instances with CUDA support.
+
+FPGA: 600mhz clock speed, because you can't really optimize critical path.
+
+float - 32 bits, double - 64 bits
+
+C: = {0} will zero out whole array, but {1.0} won't. Use memset to initialize to value.
+
+nettop!
+atom package: linter-clang, clang-format
+
+4MB of stack memory! whoa. if you overflow the stack without creating stackframes (huge for loop), you'll get a seg fault. (overflowing segment of memory.)
+solutions: heap (w malloc) or data (just put them outside of main)
+
+bus error: like a seg fault, but for data segment? data segment could be too big
+
+clang -S -masm=Intel or something - two versions of assembly, intel and at&t - intel's has destination register on the left, matching my expectation.
+
+
+
+
+
+

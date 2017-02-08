@@ -1,0 +1,61 @@
+How do you distinguish b/w OLAP and OLTP? When you're doing some % of writes? (0%?)
+  Nah - do it by size/volume. Less than 100G? Just go OLTP.
+
+Add column to row store: you'd have to move all data around! That's why it takes so long. Adding to column store is almost instantaneous - you're just appending.
+
+Disk is magnetic device. API involves seeking to data location.
+4k pages of RAM corresponding to 4k you pull off disk.
+
+Block = disk term
+Page = RAM term
+Usually we get them to line up.
+
+Locality benefit works all the way from disk to CPU.
+"Memory management unit checks L1 for values..."
+
+Column store: all about memory locality.
+
+Real DBMS: won't use malloc, will use own allocator. Will make things sit inside cache lines, struct packing, etc.
+
+---
+
+Relational vs non-relational
+
+FIRST: HEIRARCHICAL
+among the first programs were dbms'. IMS is from the 60s.
+IMS: heirarchical dbms: a has many b has many c, etc. (figure out what sits inside of what)
+queries are basically like DOM traversal
+not the best way - many to many doesn't work! should be separate relation, not nested.
+
+THEN: RELATIONS
+one guy in the 70s
+relations (tables) have instances (rows)
+we can reason about subsets, unions, joins, etc by matching IDs.
+
+relation, tldr: each instance has fixed set of columns. every operation relies on this assumption.
+non-relation: things don't have same number of columns. arbitrary nesting, not necessarily schema.
+
+datomic sits on top of postgres and memcache etc, gives you an entirely different set of semantics.
+dynamoDB designed to support amazon shopping cart - never fail, ok to have copies.
+  tldr; different copies of data voting on what truth is.
+
+---
+
+SQL vs NoSQL
+
+SQL: declarative language for data querying. intentionally simple.
+  turing complete: thing can compute anything that can be computed.
+  SQL parsed into query plan (kinda like AST)
+
+NoSQL: ?
+
+SQL frontends are popular - even if the primitives are like map and reduce.
+
+postgres came first - didn't have SQL frontend. postgresql is like everything after.
+
+
+
+
+
+
+
