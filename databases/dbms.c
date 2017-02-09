@@ -9,6 +9,10 @@
 char table[MAX_RECORDS][MAX_RECORD_SIZE];
 int numRows = 0;
 
+// TODO: define struct schema based on CSV header:
+// collection,content_type,document_creation_date,document_number,document_page_count,document_release_date,
+// document_type,file,more1_link,more1_title,more2_link,more2_title,more3_link,more3_title,more4_link,more4_title,more5_link,more5_title,publication_date,release_decision,sequence_number,title,url
+
 void loadFile(char *path) {
   printf("loading path: %s\n", path);
 
@@ -21,9 +25,13 @@ void loadFile(char *path) {
   int i = 0;
   while ((read = getline(&line, &len, stream)) != -1) {
     bytesLoaded += (int) read;
+    // TODO: rows should be instances of struct instead of string
     strncpy(table[i++], line, MAX_RECORD_SIZE);
     numRows++;
   }
+
+  fclose(stream);
+
   printf("loaded %i bytes into %i rows\n", bytesLoaded, numRows);
 }
 
@@ -33,29 +41,36 @@ void chomp(char *str) {
     str[end] = '\0';
 }
 
+void getInput(char *input) {
+  printf("query: ");
+  fgets(input, MAX_INPUT, stdin);
+}
+
 int main(int argc, char *argv[]) {
   if (argc != 2) {
     return 1;
   }
 
+  // TODO: accept any number of files
   loadFile(argv[1]);
 
-  // GET query from stdin
   char input[MAX_INPUT];
-  printf("query: ");
-  fgets(input, MAX_INPUT, stdin);
+  getInput(input);
 
-  // PARSE query
-  char *column = strtok(input, ":");
+  // PARSE query of form field:value
+  // TODO: handle bad input
+  char *field = strtok(input, ":");
   char *value = strtok(NULL, ":");
   chomp(value);
 
+  // COUNT matching results
+  // TODO: only search for `value` within field `field`
   char *result;
   int resultsCount = 0;
   for (int i = 0; i < numRows; i++) {
     result = strstr(table[i], value);
     if (result != NULL) {
-      printf("%s\n", result);
+      // printf("%s\n", result);
       resultsCount++;
     }
   }
