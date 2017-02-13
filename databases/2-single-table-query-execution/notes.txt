@@ -1,0 +1,30 @@
+psycopg - python process that understands db client?
+database client - client side code that understands application level protocol to dbms. they communicate with tcp, efficient application level protocol. binary something.
+connection pooling - eliminates tcp overhead
+~~~
+messages in special binary protocol
+~~
+connection manager - maintains state of connection. (pushes back on client if out of capacity)
+process mgr - gives request process (i.e., process, OS (POSIX) thread, green (lightweight) thread) of execution.
+DBMS worker doing multiple threads: if you want to prioritize turnaround time of a big query over throughput of many queries
+relational query processor
+  parse sql query into query plan (analogous to how compiler outputs AST)
+  rewrite query plan (simplifies logic)
+  optimize plan (uses past performance data (in the catalogue) to decide which join algo to use, whether to use the index or just seq scan, etc)
+  execution
+
+---
+
+execution:
+usually done as iterators
+query plan is tree. children init their children, then call next. iterators on iterators.
+COUNT: consume children as long as they're A's, then once it hits a B, yield a value.
+
+---
+
+composite index. why is this better than 2 individual indexes?
+salary = 100, ago = 10
+catalogue will store estimates for cardinality of data (within an order of magnitude)
+in postgres - _pgstat_column will have these ^ numbers
+
+---

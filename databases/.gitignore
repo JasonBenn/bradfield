@@ -1,1 +1,5 @@
-cia-crest*
+ciadocs
+
+# Debugging
+*.dSYM*
+

@@ -1,0 +1,66 @@
+3 types of joins:
+
+1. nested loop join
+  -> index nested
+    smallest one as outer table, use index to find row in larger inner table.
+  chunk nested loop: optimization involving buffering lots of pages from each table.
+  if this process has all RAM on machine... grab a chunk of pages from X, a chunk from Y, do a nested loop in memory on those chunks.
+
+2. hash join
+  hash the smaller table. keys = hashed row (usually ID), values = tuples you'll emit for matches on this row.
+  stream the larger table, whenever you get a match, take that hashed value (tuples of employee) with streamed row (tuples of parking spot) and emit
+
+  hybrid hash join/batch hash join: think if you can make it a regular hash join by decreasing number of fields you're selecting from outer table. with fewer values, you're more likely to fit the whole hash table into memory
+
+  hashing is expensive... sometimes you can just use a simple ID, but other times: you have to combine predicates.
+
+  hash join does not work when predicate involves inequality. can't compare two hashed values.
+
+3. sort-merge join
+  resorts to this for larger data.
+  for a sense of what it takes for degenerate behavior: http://postgresql.nabble.com/Merge-Join-chooses-very-slow-index-scan-td5842523.html
+
+  if you have an index for a predicate, then you can immediately grab those tuples and compare them to your hash table.
+
+
+_postgres has all 3, mysql only has the first (as of a few years ago)_
+
+
+pros and cons:
+
+1. nested loop join
+  simple
+  lets you do inequalities
+  generally gonna perform well on small tables
+  performs better if right hand side on index (planner can choose this oc)
+  common bc indexes on foreign keys
+  slow for nontrivial amounts of data
+  index: whichever field on join predicate is on larger table
+  index: independent predicates, sometimes
+
+2. hash join
+  if left hand side, hashed, fits in memory, this shines
+  if you can fit into 2 or 3 hash tables... still prob better than sort merge
+  can't do inequality
+  index: independent predicates
+
+3. sort merge join
+  hash join would take "a whole bunch" of hash tables for left hand table
+  cheap IF your data is sorted already. joining on primary key, for example
+  otherwise pretty bad.
+  two large tables
+  index: independent predicates
+
+indexes:
+  they take space
+  takes IOs to load them to memory (2-3 pages, sometimes 4)
+  read write workload: makes writes slower
+
+debugging:
+  read query plan
+  what?! wrong join strategy!?
+  figure out why:
+    not enough memory for hash join?
+    add an index?
+    refine the query?
+    still not fast enough? denormalize?
