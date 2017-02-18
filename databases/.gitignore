@@ -3,3 +3,17 @@ ciadocs
 # Debugging
 *.dSYM*
 
+
+
+
+
+
+let's get this party started!
+
+https://github.com/JasonBenn/dbms
+
+we now have a decent Makefile, this project is structured kinda like a real dbms (postgres), and header and source files are automatically bundled into object files and linked together properly!
+
+we also now have a tiny testing framework (see `tests/tests.h` or run `make test`), I think unit tests will be a much more pleasant workflow than writing a `main()` function at the bottom of each file you work on and compiling that thing separately
+
+orrrr at least it would be if it weren't for the fact that `commands/load-csv.c` appears to be segfaulting atm lol

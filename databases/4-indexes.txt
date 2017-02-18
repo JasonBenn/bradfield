@@ -1,0 +1,55 @@
+indexes
+-------
+
+high branching-factor/fan-out trees minimize IOs
+binary tree hops for 1M rows: 20 (2^20=1M)
+b+ tree hops, given fan out of 100: 3 (100^3=1M)
+
+aside: clustered index = storing entire record at leaf.
+a table can only have 1, because that's how you store the entire table.
+but can eliminate that last lookup
+
+compression can help us increase fan-out, minimizing # of hops to get to a leaf.
+
+---
+
+4 types of indexes in postgres:
+
+b+ tree indexes
+- 2-4 hops for access
+- sorted! so you can do comparison, etc
+
+when to use: this is default. does everything at pretty good performance
+
+hash indexes
+- 1 hop for access
+- unsorted, so only works for equality
+
+when to use: do i need equality check? do i want lookups to be 2-4x faster?
+
+aside: you might want both b+ and hash indexes, if it's worth the cost of the extra write.
+
+GIN
+- good for search over text fields, composite fields (vector, JSON)
+- tree shaped
+- leaves are tokens pointing to every record containing that token!
+
+when to use: do i want some kind of hacky full text search? add GIN index
+
+GiST
+- generalized search tree
+- index that you want for custom type might be different than b+ tree
+- interface for defining a search tree. generic interface that could underly b+ tree index
+- interface = execute arbitrary C. whoa
+
+when to use: when you have custom data types
+
+aside: postgres originally took off bc it allowed user defined types (audio, image, coords, etc)
+
+---
+
+to create efficiently:
+1. sort, so you can anticipate parent nodes
+2. bulk create, one page at a time. maybe fill each page up 60-70%
+
+otherwise you'll be plagued w tons of random disk accesses

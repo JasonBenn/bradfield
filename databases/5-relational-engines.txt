@@ -1,0 +1,75 @@
+WHY RELATIONAL?
+---------------
+
+Relational query languages were much simpler than the state of the art at the time they were invented:
+  Tree-based datastores (like IMS)
+  Graph databases
+
+Why are relational engines so much better than other types of engines?
+  *rich program analysis*
+  Relational engines can decompose a query into simple primitives, then map & reduce them.
+  Essentially, they enable query optimizations.
+  They can anticipate IO lookups and compare different plans.
+  *Data lineage* is another key benefit
+    Without well-formed primitives, it's hard to tell which parts of the query were expensive or where things came from.
+
+Graph db:
+  Very little to make sense of besides depth-first, breadth first.
+  Finding clicks, cycles, strongly connected componenets.
+  If data can be so generic, queries can only get so complex.
+  Relational is more imposing.
+
+Optimization process:
+  Query in SQL comes in
+  Parse it into (naive) query plan. This is phrased as a tree of relational operators (select, project, join, etc)
+  Query optimizer basically generates all permutations of the plan, cost them by referencing the catalogue, then picks the best one.
+
+TODO: check out the Postgres catalogue.
+
+Scaling relational databases:
+  Shard vertically or horizontally.
+  At some level, you resort to some other way of sharding
+  DynamoDB did this first by adding no relational semantics
+  Spanner is trying to do this and keep full relational semantics
+    The hard part is transactions and guarantees, by the way.
+
+CAP theorem:
+  partition tolerance (tolerating two components not talking to each other)
+    distributed systems always have to have this, bc things always go down
+  consistency
+  availability
+
+  basically gotta choose between consistency and availability.
+  spanner has mitigated cost of a partition as much as possible
+  PAXOS (old, hard) and RAFT (new, simpler)
+
+TODO: our SQL dialect should map more closely to relational algebra than postgres SQL. Simpler.
+
+RELATIONAL OPERATORS
+--------------------
+
+Primitives:
+  selection (sigma)
+  projection (pi): A - B: things in A not in B
+  crossproduct (x)
+  union (U)
+  set difference (-)
+
+Derived operators:
+  intersection: R - (R - S): things in R, minus the the things in R that aren't in S
+  join (bowtie): ⋈(age < 18)
+    More expensive to do a complete cross product THEN filter, so we'll implement this as operator(s).
+  natural join
+
+Useful because there are a discrete number of ways to change plans around to generate a plan space.
+
+
+
+
+
+
+
+
+
+
+
