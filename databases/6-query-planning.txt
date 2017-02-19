@@ -1,0 +1,109 @@
+Components
+----------
+
+1. Plan space
+- which things are equivalent?
+
+2. Cost estimation
+- Cost formula
+- Size estimation (need catalog, statistical estimation?)
+
+3. Search algorithm
+- How do we search through the plan space?
+- NP hard, but we can reduce factors by quite a lot.
+
+
+Plan Space
+----------
+
+Break query into query blocks
+Optimize one at a time, recurse
+Correlated blocks = function calls (inner SELECT, based on a WHERE = tuple, tuple passed in from outer block)
+
+Equivalences?
+- Selections:
+  - Can push down!
+- Projections:
+  - You can project early, then throw away more later
+- Cartesian products:
+  - Can join in any order!
+  - Sometimes cross product, sometimes natural join
+  - Cross products should be avoided - join things that have cols in common first so you can natural join
+
+Left-deep join tree intuition:
+- Encourages pipelining & streaming
+- Not always best, but great heuristic for pruning search space
+- Saves memory to orient on A, then stream past B, C, D
+
+Exception: map reduce
+- It writes down output to shared file system after every step
+- Tons of IO, but throws away benefits of pipelining
+
+Algorithm
+---------
+
+Generate tree shapes
+- Choose an outer table (bottom left), then get permutations of ordering of other joins
+
+Once you have trees:
+- Various access methods on leaves (b trees on cols, heap scans)
+- Various join algorithms
+
+Finally, push selections and projections as low as possible.
+
+
+Cost Estimation
+---------------
+
+Each operator needs to:
+- Cost itself (# IOs)
+- Estimate outputs using selectivity (# rows, # bytes)
+
+We want to rank order plans, not exactly estimate plans.
+
+CATALOG
+
+- NTuples (# tuples in table)
+- NPages (# disk pages in table)
+- Mix/max value in each col
+- Distinct values in each col
+- IHeight (index height)
+- INPages (index # pages)
+
+Good next step: throw away uniformity assumptions better histogram of column cardinality:
+
+- uncommon: store a parameterized distribution, (like a gaussian curve: described by variance and mean)
+- common: histogram
+
+Update periodically (once a day, in a bg thread, etc. Just don't make each write 2 writes.)
+
+How to estimate output...? Selectivity.
+
+SELECTIVITY = probability a tuple will make it through a term
+size of output/size of input
+
+Selectivity: `col = val` = 1/NKeys (assume uniformity)
+Selectivity: `col1 = col2` = 1/MAX(NKeys(1), NKey(2))
+Selectivity: `col1 > val` = range of query / range of data
+More algos: see minute 35: https://www.youtube.com/watch?v=JRzELkPFbRY&index=16&list=PL-XXv-cvA_iBVK2QzAV-R7NMA1ZkaiR2y
+
+If missing stats: use 1/10
+
+Postgres default values: src/includ/utils/selfuncs.h
+
+
+
+Search strategy
+---------------
+
+Dynamic programming algorithm
+Alternatively: check out Calcite - a cascade style query optimizer.
+
+Postgres search strategy: heuristics + system R strategy
+MySQL: just heuristics. Poo.
+
+
+
+
+
+

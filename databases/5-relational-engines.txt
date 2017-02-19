@@ -51,8 +51,8 @@ RELATIONAL OPERATORS
 Primitives:
   selection (sigma)
   projection (pi): A - B: things in A not in B
-  crossproduct (x)
-  union (U)
+  crossproduct (x): all possible combos of rows in each table, concatenated
+  union (U): requires same fields: end w more rows
   set difference (-)
 
 Derived operators:
@@ -64,12 +64,57 @@ Derived operators:
 Useful because there are a discrete number of ways to change plans around to generate a plan space.
 
 
+What's happening now in relational DBs?
+---------------------------------------
+
+Evolution. More built-in functions, user-defined types, optimizations.
+Some are taking in-memory and column stores more seriously.
+Optimization - pretty good place right now.
+
+Stonebreaker: relational is great, but row stores are never really the best case. Blunt tool.
+  OLTP: in memory
+  Analytics: columnar
+  Others: graph, noSQL, matrix-oriented (like K)
+
+Cassandra: non-relational, SQL-like.
+  Engine makes fewer assumptions about what data looks like, relational things aren't possible.
+  SQL would be parsed into some other kind of executable plan.
+  LOL that Uber requires all DBMSs to be Cassandra.
 
 
+Example:
+--------
+Find names of suppliers who supply any part that's red
+
+SELECT suppliers.name
+WHERE catalog.sid = supplier.sid, catalog.pid = parts.pid, parts.color = red
+
+PI (SELECT (X (X (PI parts (pid, color)), (PI catalog (pid, sid))), (PI supplier (sid, name))) color = red) name
 
 
+NP hard: Optimal solution can't be discovered in polynomial time, only exponential time.
+NP complete: the set of all possible problems that we've discovered as being NP hard.
+
+Polynomial time: n^2: manageable.
+Exponential time: 2^n: TERRIBLE
+
+P=NP: Funny thing is we're stuck with polynomial time solution, but also haven't been able to prove that there isn't a poly time solution.
+the thing we can't prove is wrong (that things we think are non-polynomial might actually be polynomial)
+
+? Cross product vs natural join?
+  - If no cols in common, must cross product
+  - If col in common, natural join an option
+  - Join == selection on cross product
 
 
+HW:
+---
+Get a SQL parser generator (Bison?), map whatever it outputs to our operators
+Parser generator, takes a grammar, produces a parser. https://www.gnu.org/software/bison/
 
 
+Things still to build:
+----------------------
+- Memory manager component: malloc won't cut it
+- Transactions
 
