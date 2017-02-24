@@ -1,0 +1,85 @@
+Transactions
+------------
+
+You need them all the time! Ex,
+- Checking if user exists before creating another
+- Debiting and crediting at same time
+
+BEGIN, COMMIT.
+
+
+ACID
+----
+Atomicity - txn should entirely succeed or entirely fail
+Consistency - abort if violating integrity constraints (uniqueness, fk, etc)
+Isolation - txns shouldn't have to know about each other. single user illusion.
+Durability - if txn is committed, it should actually have data.
+
+Writeahead log.
+Concurrency control.
+
+
+Isolation
+---------
+
+How to ensure isolation if we want txns? Serial schedule.
+-> Future shaky assumption... maybe IO will be cheap enough in the future that this isn't necessarily too slow to implement practically.
+
+Equivalent schedule = schedule contains same actions, leave DB in same state
+
+
+Two phase locking
+-----------------
+
+A txn can acquire locks and release locks, but you can't acquire a lock after you've released a single lock.
+
+Shared lock: obtain for reading, others can read.
+Exclusive lock: obtain for writing, nobody can read or write.
+
+Locks can be over table, row, page, 10-page collection, whole DB, any unit you want.
+
+Oracle partly beat Ingres because Oracle supported page-level locking from the very beginning. Had much better performance for it.
+
+Postgres has like 5 or 6 schedules.
+FULL SERIALIZABLE: (2PL) slower, but guarantees serializable schedule.
+READ COMMITTED: (postgres default) other txns can drop read lock immediately. means that within txn you can have 2 reads and get different results. performs better.
+
+Lock manager will provide txn with lock over some DB unit.
+
+
+Lock manager
+------------
+
+Controls a hash map.
+
+Key: Some kind of identifier for actual resource: "row X", "table Y"
+Values: some collection of locks
+  shared locks, exclusive locks, queue of txns
+  s: [xact1, xact2], x: [] q: [xact3, xact4]
+
+
+Deadlocks
+---------
+
+Cycle in the graph. Two things waiting on each other's resources.
+Deadlock detection is feasible - just traverse the graph and look for cycles.
+DFS periodically.
+
+
+Create two new threads w their own schedules
+Find a way to represent reads and writes
+Ops: read and increment, read and decrement
+Come up w a schedule that breaks
+Lock manager should need to maintain serializability
+Then cause a deadlock
+Then try to implement graph search, deadlock prevention
+
+
+Writeahead log
+--------------
+
+How do we guarantee atomicity?
+By recording redo and undo steps for each txn before committing.
+If we crash before we write to DB, just play the writeahead log forward.
+Logs are idempotent.
+Playing forwards or backwards guarantee atomicity and durability.

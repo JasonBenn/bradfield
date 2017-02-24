@@ -97,13 +97,15 @@ Search strategy
 ---------------
 
 Dynamic programming algorithm
+
+If you have a tree recursive problem with overlapping subproblems, solve the subproblem once and reuse the solution. i.e. the napsack problem.
+Top down with memoization.
+Bottom up with bases cases and building them up.
+Salinger is bottom up. Base case is a single relation.
+
 Alternatively: check out Calcite - a cascade style query optimizer.
 
 Postgres search strategy: heuristics + system R strategy
 MySQL: just heuristics. Poo.
 
-
-
-
-
-
+At every point, store the lowest cost of the operator, plus the lowest cost for a sorted version (?)
