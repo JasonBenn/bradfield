@@ -1,0 +1,24 @@
+WEAK ISOLATION IN DISTRIBUTION
+
+why is the use of this so-called “weak isolation” is so widespread?
+- because it's an order of magnitude more performant when you're distributed.
+- i mean, imagine how hard it is to get a lock on a resource when your db is distributed. you have to communicate with a lock manager over network. would be incredibly slow.
+- people resort to weaker isolation guarantees for performance
+- and database vendors are incentivized to default to weak isolation settings, similar to how router vendors are incentivized to make routers with larger and larger queues (fewer dropped packets!)
+
+what these non-serializable isolation modes actually do?
+- it's kind of hard to know
+- in practice there are few truly concurrent workloads so that's why most people are ok
+- but this is a vulnerability that can be exploited. a bitcoin vendor was bankrupted by an attacker this way!
+
+nosql
+- generally defined by weak isolation guarantees (i.e., non-serializable scheduling of transactions)
+- dynamo, cassandra, riak all fairly similar distributed dbs with weak isolation guarantees
+- policy is to accept writes, reconcile divergent versions later
+- dynamo: provides merge operators to programmer
+- cassandra: automatically merges most recent
+- riak: provides automatically mergeable data types
+
+why is reasoning about them is so difficult?
+- because now programmer has to reason about merging divergent data, and that's freakin hard.
+- at this point, what's even the benefit of serializable txns. we don't even have the benefits, and we have to think about not having them.
