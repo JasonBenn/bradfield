@@ -1,0 +1,101 @@
+"Big Data"
+
+Big Volume
+Too much data
+
+Big Velocity
+Coming too fast
+
+Big variety
+Too many types, hard time integrating it
+
+
+Big volume
+----------
+Commercial data warehouse projects are doing fine at this
+2005: data warehouses were row stores - but now they're column stores.
+Must be shared-nothing, multi-node column store to be scalable.
+
+However... business intelligence is going to be replaced into data science
+(People want predictive models, not numbers)
+But those require linear algebra... mainly matrix multiply.
+
+Supporting complex analytics
+1. help them find the data they need
+2. give them the power to compute over arrays
+
+Problems whose size won't fit into main memory
+Once you solve their problem, they'll give you a bigger one, lol.
+
+Solution options:
+- Stats packages don't have data mgmt. Just files.
+- Avoid a RDBMS <-> R - 2 systems nightmare
+- Array DB. Check out SciDB.
+
+Hadoop: sucks.
+Hive/Pig built on top - SQL
+
+MapReduce purpose built for Google
+- Not good for distributed computing
+
+Google has moved to BigTable!
+- Dremmel, F1 are interesting
+
+Cloudera also abandoned MapReduce! Not even built on HDFS
+Hadoop in 2015 is HDFS at the bottom which has horrible perf problems
+Fundamentally turning into SQL at top, data warehouse on the bottom
+
+Spark: faster, more functional version of MapReduce.
+They'll need to fundamentally rearchitect everything to support data science, tho.
+? So why use spark??
+
+tl;dr: what is your need?
+data warehouse: plenty of column-store solutions
+data science: SciDB
+? I think Spark is just another data warehouse product?
+
+
+Big velocity
+------------
+IOT is sending this thru the roof
+State of multiplayer games, tagging cars, runners in boston marathon, etc
+
+Problem: find 'strawberry', followed within 100ms by 'banana'
+Complex event processing: StreamBase, Storm, Kafka. Doing fine.
+
+Process the firehouse, record state
+Need txns, you can't lose messages. High speed OLTP
+
+Old SQL: couple orders of magnitude too slow. disk, heavy weight txns, multi-threading
+NoSQL: give up SQL (lesson: don't bet against the compiler) OR give up ACID (lesson: fine, IF you don't need ACID)
+- Prediction: Old SQL, NoSQL gonna merge. Ha!
+New SQL: just use new architecture. Take advantage of larger memory, etc.
+VoltDB - same thing as Cassandra, but order of magnitude faster.
+
+tl;dr: what is your need?
+High speed stream processing: StreamBase, Kafka
+High speed OLTP: VoltDB
+
+
+Big variety
+-----------
+Spreadsheets, siloed data, lots of data from web
+Business intelligence wants more and more of this data
+
+Traditional solution: ETL
+Works for 10-20 data sources, but requires too much heavy lifting!
+Constructing global schema for any type of data is hopeless.
+
+Lots of ideas trying to beat ETL:
+Tamr: oriented toward enterprise
+Alteryx, Trifacta (Hellerstein)
+- oriented towards supporting individual data scientest
+
+Deduping "mike" and "michael": machine learning/stats systems, crowd-sourced when unsure. Huge win over ETL
+
+
+Trends
+------
+- distributed txns may never outperform one node. Wow!
+- NVRAM: fast/cheap enough to affect db?
+- RDMA: much faster networking: will it change distributed DB systems?

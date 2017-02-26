@@ -1,3 +1,6 @@
+Great DB papers: http://www.redbook.io/
+
+
 WEAK ISOLATION IN DISTRIBUTION
 
 why is the use of this so-called “weak isolation” is so widespread?
@@ -22,3 +25,133 @@ nosql
 why is reasoning about them is so difficult?
 - because now programmer has to reason about merging divergent data, and that's freakin hard.
 - at this point, what's even the benefit of serializable txns. we don't even have the benefits, and we have to think about not having them.
+
+
+
+DYNAMO
+
+Genesis of NoSQL movement.
+High availability distributed databases, by sacrificing txns.
+
+Core of the tradeoff:
+
+Two paradigms: single master, or multi-master.
+Traditional: only write to one.
+Multi-master: high availability writes, but less consistency.
+
+Aside: you lose a little consistency even just maintaining a read replica - that replica is always a little out of date.
+
+
+PARTITIONING
+------------
+Consistent Hashing
+Gives: Incremental Scalability.
+
+adjacent nodes are often chosen to be in different AZs.
+3 replication nodes, 2 nodes required for quorum for read, 2 noes for quorum for write.
+goal is to avoid correlated risks - don't put everything in one data center.
+
+hash produces semi-random output, so it's a good way to even out distribution of kvpairs.
+virtual nodes can further help with hotspots.
+
+adding nodes is super easy, assign them some keyspace and they grab them from whoever already has them and that's it. requests start coming to them.
+
+? key term: token ring
+
+tl;dr: random distribution, replication, easy scalability.
+
+
+HIGH AVAILABILITY FOR WRITES
+----------------------------
+Vector clocks with reconciliation during reads
+Gives: Version size is decoupled from update rates.
+
+substitute for wall clocks, which suck at synchronizing. hard to agree on what time it is.
+
+one method: NTP: application layer networking protocol that allows you to distribute time.
+surprisingly successfuly. distance b/w us is half round trip time.
+
+we just care about logical ordering/lineage - not exact time.
+
+vector clock is a list of (node identifier, node update counter) tuples -> update
+Nodes respond with their versions of all updates from all nodes
+in situations where a read receives a divergence, client reconciles and notifies.
+
+dynamo: this is an advantage. can use business logic to reconcile.
+
+what about writes?
+insert can happen without read, but update would be prefaced by read.
+
+
+HANDLING TEMPORARY FAILURES
+---------------------------
+Sloppy Quorum and hinted handoff
+Gives: Provides high availability and durability guarantee when some of the replicas are not available.
+
+trying to write to ABC, actually write to ABD because C is down.
+D will get written w metadata saying "this belongs to C"
+gossip-based communication: D will occasionally check if C is up and write back if it is.
+
+a machine could go down for 5s bc of garbage collection... that's definitely down if your write latency SLA is 200ms for writes. wow.
+
+administrator will get paged if C is down for too long, and if it's not coming back up, then admin has to permanently reconfigure topology, redistributing keyspace.
+
+? powers of 2
+? know network latencies/typical throughputs
+  ping vs speed of light: about 2x. pretty shocking, actually.
+  ping to NY: 80ms
+  ping to japan: 200ms (?)
+  ping to google: 10ms
+  speed of light around equator: 135ms (7 times around globe/sec)
+
+
+RECOVERING FROM PERMANENT FAILURES
+----------------------------------
+Anti-entropy using Merkle trees
+Gives: Synchronizes divergent replicas in the background.
+
+leaves: files
+every parent is hash of its children, all the way up
+binary search (well, you have a larger branching factor) until you find diffs
+useful for redistributing keyspace
+
+if we have a merkle tree of the data, we can just traverse down to what's changed
+
+HOW:
+??? merkle tree stores mapping: these parts are diff, these parts are same.
+
+
+MEMBERSHIP AND FAILURE DETECTION
+--------------------------------
+Gossip-based membership protocol and failure detection.
+Gives: Preserves symmetry and avoids having a centralized registry for storing membership and node liveness information.
+
+every node has mapping of token ring address space to ip address internally.
+gossip protocol: i get an update, tell a friend. each friend randomly tells a friend. etc. spreads exponentially. tolerates some redundancy
+
+clients might have some of this table as well, so they can directly hop to a node.
+dynamo services sometimes will poll every 10 seconds to get updated table.
+
+??? gossiping happens all the time...? configurable.
+
+
+
+CLASS
+
+Cross database interaction - tough, good for research
+systems we love
+
+Reflections of Google: (would be interesting to read)
+MapReduce
+BigTable
+Spanner
+
+Takeaway: use highly available dbs for some of your data, but know when you need txns.
+If you want more availability... understand what you're trading off.
+Mongo is going for consistency... misses. what's the benefit? schemaless? not really a benefit.
+
+
+
+Ideal homework:
+
+Implement vector clocks in my DHT.
