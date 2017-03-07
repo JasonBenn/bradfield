@@ -1,3 +1,82 @@
+Oz tip:
+- Early career: first 10 years
+- Try to work on OS, DB, or compilers company.
+  You'll learn a ton.
+
+Oz tip 2:
+- Build a tool that reads query plans and suggests ways to improve them.
+- Present slow queries and list actions you could take.
+  "If you add an index here, it'll switch to merge join"
+  "This join is super expensive, you could remodel this way..."
+  "$200/hour to fix this...?"
+
+More practice:
+- bring queries in from your work
+- do more practical knowledge - really hammer that in
+
+
+Questions:
+- What does Google's file system index look like? How do they answer my queries so quick?
+- What is NVRAM: fast/cheap enough to affect db?
+- What is RDMA: much faster networking: will it change distributed DB systems?
+- MemSQL/VoltDB? What's best for Minerva's small DB?
+- Difference between MapReduce runtime vs library? (Runtime is implicitly included for any program in the language, like a GC. Library explicitly included)
+- Array DBs? Just getting started, or something to watch? ML seems a natural fit. Array DB/GPU combos?
+- How do high-performance OLTPs compare, interally?
+  OLTP is just a workload. Online (user is there, getting a response right away). And transactional (I'm doing reads and writes together, and they should be atomic.).
+  In-memory OLTP is better (Stonebraker is selling VoltDB, etc.)
+- How do in memory DBs compare, interally?
+
+
+- In memory DBs:
+Don't page things in from disk.
+Don't commit if it's not in the log, and don't write to disk unless it's in the log.
+Writeahead log - still writing undos and redos. Gotta determine how frequently you actually write. Tradeoff.
+Instead of a page, make better use of CPU caches
+Instead of thinking about IO cost when you lock, think of CPU cost
+Indexes are completely different - they won't be laid out according to page size of disk. Maybe you'd rather lay out to fit to cache lines.
+Do I need the same kind of locking mechanism if I'm not going to incur an IO for this read?
+
+- VoltDB?
+Analogous to MemSQL.
+VoltDB is a competitor
+
+- NVRAM?
+Whoa, persistent RAM.
+In memory DBMSs would be even faster - no need for even write ahead logs.
+Read Redis - kind of persisted and non-persisted. Similar to NVRAM.
+
+
+Proof of concept for something technically interesting. Read papers about NVRAM. Simulate what it would look like on DRAM.
+
+
+
+GFS - Google File System
+Solves their storage problem. Lots of commodity hardware, free OS, cheap CPU, disks, lots will fail.
+Then MapReduce
+Then HDFS. How do you calculate things distributed this widely?
+"Do I send data to the program, or the program to the data?"
+
+tl;dr: Google designed MR specifically because they had too much data (had to send program to machine) running on thousands of commodity 2004 machines - super likely to fail (so need granular failure recovery).
+
+Then: Yahoo's Hadoop. They had similar problems and read the MapReduce paper.
+Then: Facebook's Hive. HDFS + tooling for distributing program/retrying, but I don't like map/reduce. Distributed query processor. Does rewrite & optimization with a query.
+Then: (2014) Berkeley's Spark. Better (like 20) primitives. Optionally, could sub out storage method. Better interface, basically. Mostly supplanted MR.
+Then: these primitives weren't enough, people wanted SQL, so SparkSQL.
+
+Even "large" databases might not truly need a Spark-like use case. 60 terabytes of SSD costs like 20 grand - you can probably house your data on few machines.
+
+Best heuristic for choosing a solution: look at all the use cases and pattern match.
+
+Kafka/Samza - built for analytics.
+Figure out your constaints, how much you're gonna grow, what SSDs cost, etc. Think up front, make the best decision.
+
+Read: IPFS: application level protocol.
+
+
+PREP WORK
+=========
+
 "Big Data"
 
 Big Volume
