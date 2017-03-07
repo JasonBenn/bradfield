@@ -1,0 +1,9 @@
+8 - Security
+
+Security was not a first class concern of the pioneers of computer networking, and so is not at the core of its most important protocols, so much as retrofitted around them. It is however a critically important consideration in using computer networks, so this class covers the means to which we go to secure internet communication at every layer, including SSL/TLS, PGP, IPSec and WPA.
+
+Suggested prework: K&R chapters 8.2 and 8.5 Further study:
+
+Khan Academy cryptography course
+
+Book: Applied Cryptography by Bruce Schneier RFC 5246 (TLS)

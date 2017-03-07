@@ -1,0 +1,88 @@
+Carl Kingsbury: "a distributed system is a system of parts that interact slowly and unreliably"
+
+
+the first rule
+--------------
+Rule 1: don't build a dist sys. Small company maybe should just buy a $100k machine and solve the prob.
+3000 GB of RAM, 16 cores - $5 grand rent per month! But for availability you'd need 2 of them :)
+
+
+2 machine configurations
+------------------------
+active/passive: one ready to go, but dormant.
+pros: cheaper, because passive just has to stopgap until active comes back up. Could also cut out load balancer.
+cons: might take longer to bring up, also it might not work. no redundancy!
+
+active/active:
+pros: both working
+cons: have you thought about correlated risk? need load balancer AND some failover in a different area
+
+? active/active vs active/passive
+
+
+openness, transparency, middleware
+----------------------------------
+openness: well/publically documented interface = open to extension
+  protocols = message format + calling conventions. have sequence
+  any of these can be open or closed
+transparency: user can't see which machine they're interacting with
+  if the mechanism is invisible, it's transparent.
+  name: as in referential transparency (transparent to caller)
+  nontransparent system: proxy, a VPN you download?
+  transparency not always better: if you can ask user for
+middleware:
+  like kubernetes or the master process of mapreduce
+
+
+terms
+-----
+node: one of the parts that communicates slowly and unreliably
+network: medium through which they communicate
+cluster: homogeneous nodes (i.e. most supercomputers)
+  almost always on a LAN
+  almost always broadcast friendly
+grid: heterogenous nodes (some have more compute, some more storage - much harder to design for)
+
+broadcast message:
+  has no address - basically you send a netmask
+  exist at both network and link layer
+  drop one into the network and it'll go to every machine
+
+synchronous network: guarantees lockstep of all machines. prob don't actually exist.
+asynchronous network: like a non-turn based game compared to above.
+
+immutability: fantastic for sync. helpful because nodes can just trade data til they agree. git is like this w merkle tree sync. downsides: storage.
+immutability + caring about history = already cool
+immutability + not caring about history = do GC and you're golden
+
+peer-to-peer/client-server: both distributed systems, only distinction is a role.
+identity:
+  generally need to generate unique IDs
+  does help to be able to order them
+  git: actually never generates ID - its just a hash of content
+  twitter: tweet ID includes user ID, huh!
+
+  good senior eng q: design an ID system
+    constraints: budget of 64 bits; unique; wants sorting, ordering, scanning
+    should be appropriate for dist system
+    easy shardability (should be able to grab ID and know where it came from)
+    should be able to sort across nodes
+
+    10-11 bits for node (depending on business needs)
+    40 bits for ms starting now for 20 years or 50 bits of microseconds
+    leaves 14 bits or 4 bits for increment ID - within that time unit
+    ID system resets incrementer to 0 back at next time unit
+
+    ordering: time, seq num, node ID to make them sortable
+    might be helpful to estimate: resolution of atomic clocks
+
+
+finite state machines
+---------------------
+regular language: something that can be matched by regex
+irregular language: validity == can be parsed by regex lol
+want to match: abba, ababa, aa with regex a(a|b)*a
+
+don't need memory!
+standard regex: constant space content, constant in time
+extended regex: has mem, can include lookaheads/lookbehinds
