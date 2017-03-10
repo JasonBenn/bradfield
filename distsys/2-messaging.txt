@@ -1,0 +1,58 @@
+What does the Internet give us? Why do we need messaging protocols?
+-------------------------------------------------------------------
+
+Link layer can broadcast. Broadcasts by default! Just drops everything not addressed to us.
+
+Network layer: main purpose is to provide routing from host to host.
+  Gain: pick our own address (useful for organizing subnets)
+  Lose: reliable delivery. Ethernet, if light is green and you drop a frame on network, it'll get there.
+    IP is best effort. Links will have varying quality.
+  "Raw socket" - use root to give me all IP datagrams.
+  Some OSs can actually give you raw ethernet frames, too.
+
+Transport:
+  UDP: "IP for applications" i.e. with port numbers
+  TCP: congestion control, flow control, reliable delivery *of byte stream*
+
+But transport-level reliable delivery doesn't really mean application gets it!
+
+--------
+
+Framing usually happens w i.e., 4 bytes up front saying how big message is.
+Envelope: also tells you the type of message.
+Networking protocols are big endian, mercifully.
+
+
+Messaging Patterns & Primitives
+-------------------------------
+
+- TCP is reliable, but I want application-level reliable delivery. To do that, buffer the whole message in a queue before passing in.
+- Atomic delivery of messages, application-level retry.
+
+REQ/REP
+- Once I've sent a request, it would be an error to send another before a response.
+
+PUSH/PULL
+- Client pushes a bunch of data
+- One-way communication.
+
+PUB/SUB
+- Push/pull, but not 1:1.
+
+Benefits
+- RabbitMQ: star shaped, this evolved from that
+- Clarifies mental model of what's actually happening. All dist. systems use these basic patterns.
+
+
+High-level Messaging Patterns
+-----------------------------
+
+Router: acknowledges and tags messages, enabling async request-reply.
+
+Publish: {username, message}
+Everyone joins, bidirectional push/pull w server
+
+Server pub/sub
+Client->server push/pull
+
+Push to server, sub from server
