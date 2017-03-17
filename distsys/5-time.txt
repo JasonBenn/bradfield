@@ -1,0 +1,40 @@
+Flashcards:
+
+Why is time hard?
+
+What is NTP?
+- Doesn't do causality, just about synchronizing real time clocks
+- Now within very narrow tolerances. Narrow enough that leap seconds cause problems.
+- Stata 0 (timing hardware), strata 1 (networks w timing guarantees), 2-4 is internet, you sync w strata below you (to avoid too much load on higher strata)
+- After 100 or 1k of these messages, you'll get a pretty accurate RTT (throw out outliers)
+- Adjusts clock over time until offset is closer to 0, continues net activity until 0 achieved.
+
+System maintains parallel monotonically increasing clock - it's not time, but it's not going to be adjusted either. Useful for benchmarking
+
+Real time clock vs non real time clock?
+- Physical vs logical: clock agreed upon worldwide, starting on same epoch
+- Predicated on belief that there is real time and that we want to sync w it
+- Logical: just a monotonically increasing value
+
+Spanner: atomic clocks in every node! Damn.
+
+Total ordering vs causality
+- no difference b/w the 2 on the same machine
+- Casuality: event B needs data from event A, so put them in a queue until we're sure they're in the right order before processing
+- total ordering
+
+Vector clocks:
+- Help you analyze historical information and order things
+- When you send message, include vector clock
+- When you recieve message, update your vector clock based on theirs
+- Assumes messages come in order.
+- Monotonically increases
+- "I'm gonna change sthign in my dataset. Can I know for sure that you know that this happened?"
+- Different from RAFT: commit optimistically, reconcile later on (you'll have enough information)
+- Both nodes maintain array of each other's clocks
+  - All you can do is increment own clocks
+  - Requests between nodes include entire vector clock - a list of N integers
+- Tradeoffs:
+  - You need to decide what changes constitute an update to clock
+  - You need to include clock w every message - could be expensive
+  - Not a lot of drawbacks other
