@@ -1,0 +1,32 @@
+Raft
+----
+zmq req/rep works for both messages in the protocol
+optimized for: a bunch of machines need state, and we can't afford to ever lose that state
+this prioritizes consistency. dynamo example of sthing prioritizing availability
+
+No need for the additional complexity of managing membership - just configure that on startup. Paxos < Raft.
+
+You can build anything out of a key-value store!
+
+etc: system configuration
+
+etc.d daemon for system configuration
+
+
+raft is for part of data set that everyone has to agree on - but it can't be everything.
+Latency worst-case is ~500ms, that's just too long.
+
+
+Non-byzantine fault conditions. Byzantine failure = a possible failure mode is people sending bad data
+- That would make consensus problems frickin hard/impossible?
+
+Timing guarantees: must be able to respond before follower timeout
+
+Raft: usually used for configuration data about a cluster.
+Typical use case: 5 machines in a cluster of 100 managing super important state: like state of cluster
+
+Leader can reply to user after a single request-reply, even tho it's not committed yet, because once it hears success from 3 of 5 on appendEntries it can be assured that thing will be committed on next req/rep.
+
+Reads have to happen from leader
+
+Basically, raft is one leader with replicas guaranteed to be in sync, and a smooth failover process.
