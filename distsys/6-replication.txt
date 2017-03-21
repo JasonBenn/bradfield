@@ -1,0 +1,111 @@
+TERMS
+-----
+Availability/Responsiveness:
+  highly available = low latency
+  strategies for optimizing write av and read av differ
+  entangled w performance
+  nothing to do w uptime, just latency
+Reliability:
+  rate at which it goes down
+  highly available systems could be unreliable
+    i.e. always replies in 10ms, but goes down every day
+    how useful is this tho?
+Safety:
+  if a failure occurs: can't take next action, avoid dangerous states
+  related to processing things in txns
+  write data: will it get lost?
+  read data: is it correct?
+  eventually consistent can be safe, as long as you've promised your users that
+  "maybe not as important as we thought"
+Consistency
+  extent to which replicas agree on state
+  different from safety: nothing to do with avoiding states
+  eventual consistency: stale reads are OK
+    compromises strict consistency for responsiveness
+Coherency
+  relational consistency
+    "if i attach this FK, it actually exists"
+  can the system tell you if data is incoherent?
+  "this whole thing doesn't make any sense"
+  unsafe = corrupt; incoherent = violates constraints
+  safe = not corrupt; coherent = follows constraints
+  unsafe data is always incoherent
+  safe data is not necessarily coherent
+
+Adherent: sticks to belief. Adhesive: one thing doing the sticking
+Inherent: built in property
+Coherent: two things fit together. Cohesive.
+
+file systems aren't safe! don't protect flipped bits
+ZFS: safe file system by hashing data. can tell you if hash doesn't match
+
+? availability vs reliability
+? safety vs consistency
+? benefits of loosening each of these? (except safety)
+
+
+
+CLIENT CONSISTENCY
+==================
+
+MONOTONIC
+---------
+"always increasing"
+Reads
+  client never gets data than you've already received
+  trick for building this: client sends last known version number, server redirects to someone who has newer version.
+Writes
+  all writes work in a queue
+  prob need a single transactor
+  raft has monotonic writes
+Read your writes
+  read that follows what you last wrote follows what you last wrote
+  system that doesn't have this: DNS
+
+? monotonic writes
+? system with and without "read your writes"
+
+
+COMMIT
+------
+One phase
+  for dist sys: one node writes then responds
+Two phase
+  only committed once there's consensus. raft
+  attempt to deliver to everyone, then broadcast a global commit msg
+  if leader fails, might get to state where you don't know what to do
+
+  A: "everyone good to commit?" everyone checks FK constraints, yes
+  B: write comes in, everyone agrees to commit before A's commit
+  BCDE: fail on A's commit message.
+
+Three phase commit
+  if you don't have trusted leader, add a third phase to roll back?
+
+? raft: 2 round trips for every write and read
+
+
+
+CHECKPOINTING
+-------------
+checkpoint
+  valid point in past you can rollback to or begin from
+  for a log: point in the log
+  for a set of data: snapshot of the data
+message logging
+  write everything i'm about to do
+
+
+EXERCISE
+--------
+google docs:
+vector clocks so that clients know what other clients know and can realize when states diverge and need to be resolved
+server is a relay: has one pull socket, one pub socket, writes to pub socket.
+insight: pub socket is source of ordering truth!
+insight: slow clients will "win" writes by being later, that's a problem.
+solution: application logic to resolve or ignore certain messages.
+
+
+OTHER
+-----
+pack more info into messages
