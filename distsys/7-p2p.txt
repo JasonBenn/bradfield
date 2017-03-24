@@ -1,0 +1,11 @@
+Chord
+-----
+
+Simplest DHT
+"Replication is an application-level concern"
+  Maybe concat "1" to a user ID, hash, and add again
+
+Node IP addresses are hashed and that's where they live along the ring of key space!
+Then keys are hashed and placed on the ring of key space, to be stored at the next successor.
+
+Innovation is log n skips, instead of going thru neighbors, and every node maintains finger table of 2^i nodes.
