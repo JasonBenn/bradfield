@@ -1,0 +1,152 @@
+Distributed file systems
+========================
+
+Filesystem data model
+---------------------
+Big advantage: every program already know how to talk to filesystem.
+So if we want programs to participate is dist sys: abstract that away
+
+Insert a layer between syscall table and device drivers!
+Do network calls to get blocks/dirs.
+
+What is the data model of the FS?
+Database table called inodes:
+  id, type, permissions, times, nlinks, size, blocks[] (fixed size)
+
+inodes are never named, but links are named.
+
+lots of iterating through directories!
+? why not model file system as hash table?
+A: because moving dirs would be so slow.
+
+? why is the file delete API "unlink"?
+A: because dirents are literally links to inodes. mark dirent empty, decrement inode nlinks, if 0 mark blocks safe to delete.
+
+? why is there a max file name size?
+A: because dirents are a fixed size, and so names have to fit!
+
+? superblock?
+superblock = metadata about file system. very first blocks. RESEARCH
+
+? layout of file system?
+A: superblock, inode table, blocks.
+
+? why do /tmp files disappear on reboot?
+because their inodes are stored in memory instead of in the inode tbl on disk!
+
+? what is a volume?
+a superblock, an inode table, and a data segment.
+there is a root volume, and other volumes are mounted on top of it.
+
+how is this fast? disk block cache.
+
+First inode is root directory, some reserved for inode table, rest are contents of FS.
+
+
+NFS
+---
+Let's say you've got one folder that's going through the network stack...
+If I'm going to `tree` a filesystem... I expect them to all use my FS!
+Maybe the other machine has different byte order?
+
+session semantics
+process a writes to a file
+process b writes to same file
+whoever wins = whoever closes last
+
+Same semantics of FTP... but that's not how file works!
+file has monotonic writes and read your own writes, so
+process a writes to a file
+process b writes to same file
+both can move around in file and see each other's files.
+
+client/server
+
+
+GFS
+---
+Also a distributed filesystem.
+Backs BigTable database.
+Files are known large files - 4GB each. Named/chunked in special ways.
+Tuned specifically for dist of large files.
+
+client/server
+client asks master server for inode locations, then gets data.
+
+? URI encoding
+you can URI encode any byte: esc char is %, then the number of the byte in decimal (goes up to 255)
+  ?? u could be another escape char to go into unicode code points
+  ?? does it stop parsing after %10555?
+
+
+Dropbox
+-------
+download/upload model. no kernel extensions.
+downloads all files.
+poll kernel for FS events, then upload!
+...and hope no conflicts. was originally for 1 person, unlikely to conflict.
+solution to conflicts: just create 2 files.
+
+webDAV: extension of HTTP? has verbs for filesystem etc.
+
+
+Git
+---
+Best dist file system.
+Supposed to be p2p (even tho we use Github)
+Explicit log, explicit sync, explicit list of other peers.
+  Basically avoids all the fancy algorithms.
+  Only fancy algo is merge.
+Forced to pull before pushing - users must resolve conflicts.
+
+
+Merkle Tree
+-----------
+Dropbox now uses this - uploads only differences of files, not whole file.
+Each node in tree is hash of everything below it
+So to diff a tree, traverse down through hashes that don't match! Wow.
+
+=> pretty good interview question
+
+Really good at sync, but also really good for security
+
+A and B sharing big file.
+B trusts hash, not A - it can incrementally verify pieces as it gets them!
+
+Merkle trees can have many roots, all of which are hashes embedded in URLs. If A sends B all of the subhashes under one of the roots, B can verify that they're correct by recomputing the root of that subtree. Awesome. B can piece-be-piece download the merkle tree, and incrementally verify the content the whole time. nice.
+
+rabin-encoding - neat idea that uses heuristics to determine edges of chunks. cool optimization in case someone inserts content before block 0 and doesn't want to change the hash of every block in the merkle tree.
+
+heap: binary tree flattened into array
+optimized for sorting?
+
+one way: heap: first byte is parent, next are two children. skip: children of first child. and so on, with children of nodes together and their children a logarithmic distance away depending on the parent's index into the array.
+
+flat in order tree, binary addressable: even spaces are leaf nodes, odd spaces are all parents
+and whoa! crazy: popcount trailing ones of index to determine level within tree.
+
+
+Beaker
+------
+Blocks
+Merkle tree for blocks
+Signatures for top level blocks
+This is how DAT project verifies content even tho all content distributed by untrusted peers. WOW.
+
+Beaker built on top of DAT.
+
+Distribute signed top-level blocks, so when you replicate all blocks, you can hash those blocks together in a merkle tree and check that the hash matches the signed hash. awesome.
+
+
+IPFS is also Merkle tree based for syncing. "Like git, but without versioning"
+Dat guys said we want distributed web, so we DO want versioning built in.
+
+DAT: block list for site is immutable
+
+
+Peer to peer streaming peer protocol: streaming p2p. Popcorn Time!
+
+
+
+
+
